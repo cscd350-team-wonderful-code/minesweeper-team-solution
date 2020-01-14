@@ -20,7 +20,11 @@ public class Minesweeper {
 			for (int i = 0; i < tempH; i++) {
 				String line = scanner.nextLine();
 				for (int j = 0; j < tempW; j++) {
-					temp[i][j] = "" + line.charAt(j);
+					if (line.charAt(j) == '.') {
+						temp[i][j] = "0";
+					} else {
+						temp[i][j] = "*";
+					}
 				}
 			}
 			input.add(temp);
@@ -30,14 +34,24 @@ public class Minesweeper {
 			String[][] mineMap = input.poll();
 			for (int i = 0; i < mineMap.length; i++) {
 				for (int j = 0; j < mineMap[0].length; j++) {
-					if (mineMap[i][j].equals(".")) {
-						mineMap[i][j] = "" + getMineCount(mineMap, i, j);
+					if (mineMap[i][j].equals("*")) {
+						incrementAround(mineMap, i, j);
 					}
 				}
 			}
 			System.out.println("Field #" + fieldNum + ":");
 			printMineMap(mineMap);
 			System.out.println();
+		}
+	}
+
+	private static void incrementAround(String[][] mineMap, int i, int j) {
+		for (int i2 = i - 1; i2 <= i + 1; i2++) {
+			for (int j2 = j - 1; j2 <= j + 1; j2++) {
+				if (isInBounds(mineMap, i2, j2) && !mineMap[i2][j2].equals("*")) {
+					mineMap[i2][j2] = "" + (Integer.parseInt(mineMap[i2][j2]) + 1);
+				}
+			}
 		}
 	}
 
@@ -50,19 +64,7 @@ public class Minesweeper {
 		}
 	}
 
-	private static int getMineCount(String[][] mineMap, int i, int j) {
-		int mineCount = 0;
-		for (int i2 = i - 1; i2 <= i + 1; i2++) {
-			for (int j2 = j - 1; j2 <= j + 1; j2++) {
-				if (isMine(mineMap, i2, j2)) {
-					mineCount++;
-				}
-			}
-		}
-		return mineCount;
-	}
-
-	private static boolean isMine(String[][] mineMap, int i, int j) {
-		return i >= 0 && j >= 0 && i < mineMap.length && j < mineMap[0].length && mineMap[i][j].equals("*");
+	private static boolean isInBounds(String[][] mineMap, int i, int j) {
+		return i >= 0 && j >= 0 && i < mineMap.length && j < mineMap[0].length;
 	}
 }
